@@ -72,10 +72,12 @@
   }
   .plazos{
     display:flex;
+    flex-wrap:wrap;
     gap:8px;
   }
   .plazo-btn{
     flex:1;
+    min-width:70px;
     padding:10px 0;
     text-align:center;
     border:1.5px solid var(--gris-borde);
@@ -173,6 +175,7 @@
     <div class="field">
       <label>Plazo</label>
       <div class="plazos">
+        <div class="plazo-btn" data-meses="12">12 meses</div>
         <div class="plazo-btn" data-meses="18">18 meses</div>
         <div class="plazo-btn activo" data-meses="24">24 meses</div>
         <div class="plazo-btn" data-meses="36">36 meses</div>
