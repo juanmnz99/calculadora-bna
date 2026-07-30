@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Cuotas - BNA Conecta</title>
+<style>
+  :root{
+    --azul:#003d7a;
+    --azul-claro:#0057a8;
+    --verde:#2e9e4f;
+    --gris:#f4f6f8;
+    --gris-borde:#dbe2ea;
+    --texto:#1c2a3a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',Arial,sans-serif;
+    background:var(--gris);
+    color:var(--texto);
+    display:flex;
+    justify-content:center;
+    padding:32px 16px;
+  }
+  .card{
+    background:#fff;
+    max-width:480px;
+    width:100%;
+    border-radius:14px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.08);
+    overflow:hidden;
+  }
+  .header{
+    background:linear-gradient(135deg,var(--azul),var(--azul-claro));
+    color:#fff;
+    padding:24px 28px;
+  }
+  .header h1{
+    margin:0 0 4px 0;
+    font-size:20px;
+  }
+  .header p{
+    margin:0;
+    font-size:13px;
+    opacity:0.85;
+  }
+  .body{
+    padding:24px 28px 28px;
+  }
+  label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:6px;
+    color:var(--azul);
+  }
+  .field{
+    margin-bottom:18px;
+  }
+  input[type=text], input[type=number]{
+    width:100%;
+    padding:11px 12px;
+    border:1.5px solid var(--gris-borde);
+    border-radius:8px;
+    font-size:15px;
+    outline:none;
+    transition:border-color .15s;
+  }
+  input:focus{
+    border-color:var(--azul-claro);
+  }
+  .plazos{
+    display:flex;
+    gap:8px;
+  }
+  .plazo-btn{
+    flex:1;
+    padding:10px 0;
+    text-align:center;
+    border:1.5px solid var(--gris-borde);
+    border-radius:8px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:600;
+    color:var(--texto);
+    background:#fff;
+    transition:all .15s;
+  }
+  .plazo-btn.activo{
+    background:var(--azul);
+    border-color:var(--azul);
+    color:#fff;
+  }
+  .tasa-note{
+    font-size:12px;
+    color:#66748a;
+    margin-top:6px;
+  }
+  .resultado{
+    margin-top:22px;
+    background:var(--gris);
+    border-radius:10px;
+    padding:18px 20px;
+  }
+  .fila{
+    display:flex;
+    justify-content:space-between;
+    padding:7px 0;
+    font-size:14px;
+    border-bottom:1px solid var(--gris-borde);
+  }
+  .fila:last-child{
+    border-bottom:none;
+  }
+  .fila .valor{
+    font-weight:600;
+  }
+  .cuota-destacada{
+    text-align:center;
+    padding:16px 0 4px;
+  }
+  .cuota-destacada .num{
+    font-size:34px;
+    font-weight:700;
+    color:var(--verde);
+  }
+  .cuota-destacada .label{
+    font-size:13px;
+    color:#66748a;
+  }
+  .disclaimer{
+    font-size:11px;
+    color:#8a97a8;
+    margin-top:16px;
+    line-height:1.5;
+  }
+  .whatsapp-btn{
+    display:block;
+    text-align:center;
+    margin-top:16px;
+    background:var(--verde);
+    color:#fff;
+    text-decoration:none;
+    padding:12px;
+    border-radius:8px;
+    font-weight:600;
+    font-size:14px;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <h1>Simulador de Cuotas</h1>
+    <p>Financiación BNA Conecta</p>
+  </div>
+
+  <div class="body">
+
+    <div class="field">
+      <label for="monto">Monto a financiar (ARS)</label>
+      <input type="text" id="monto" inputmode="numeric" placeholder="Ej: 1.500.000" value="1.000.000">
+    </div>
+
+    <div class="field">
+      <label for="tna">Tasa Nominal Anual - TNA (%)</label>
+      <input type="number" id="tna" step="0.1" value="27">
+      <div class="tasa-note">Valor de referencia PyME. Confirmá la tasa exacta con el comercio.</div>
+    </div>
+
+    <div class="field">
+      <label>Plazo</label>
+      <div class="plazos">
+        <div class="plazo-btn" data-meses="18">18 meses</div>
+        <div class="plazo-btn activo" data-meses="24">24 meses</div>
+        <div class="plazo-btn" data-meses="36">36 meses</div>
+      </div>
+    </div>
+
+    <div class="resultado">
+      <div class="cuota-destacada">
+        <div class="num" id="cuotaMensual">$0</div>
+        <div class="label">cuota mensual estimada</div>
+      </div>
+      <div class="fila"><span>Monto financiado</span><span class="valor" id="rMonto">$0</span></div>
+      <div class="fila"><span>Plazo</span><span class="valor" id="rPlazo">0 meses</span></div>
+      <div class="fila"><span>Total a pagar</span><span class="valor" id="rTotal">$0</span></div>
+      <div class="fila"><span>Costo financiero total (intereses)</span><span class="valor" id="rInteres">$0</span></div>
+    </div>
+
+    <a class="whatsapp-btn" id="waBtn" href="#" target="_blank">Enviar simulación por WhatsApp</a>
+
+    <div class="disclaimer">
+      Cálculo estimado por sistema francés (cuota fija), solo a fines orientativos. No incluye seguros, gastos administrativos ni el Costo Financiero Total (CFT) real informado por el comercio adherido a BNA Conecta, que puede diferir de la TNA. Valores sujetos a confirmación final al momento de la compra.
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const montoInput = document.getElementById('monto');
+  const tnaInput = document.getElementById('tna');
+  const plazoBtns = document.querySelectorAll('.plazo-btn');
+  let plazoMeses = 24;
+
+  function parseMonto(str){
+    const limpio = str.replace(/[^0-9]/g,'');
+    return parseFloat(limpio) || 0;
+  }
+
+  function formatoMoneda(num){
+    return '$' + Math.round(num).toLocaleString('es-AR');
+  }
+
+  function formatoInputMonto(valor){
+    const num = parseMonto(valor);
+    return num ? num.toLocaleString('es-AR') : '';
+  }
+
+  function calcular(){
+    const monto = parseMonto(montoInput.value);
+    const tna = parseFloat(tnaInput.value) || 0;
+    const iMensual = (tna/100)/12;
+    let cuota;
+    if(iMensual === 0){
+      cuota = monto / plazoMeses;
+    } else {
+      cuota = monto * iMensual / (1 - Math.pow(1+iMensual, -plazoMeses));
+    }
+    const total = cuota * plazoMeses;
+    const interes = total - monto;
+
+    document.getElementById('cuotaMensual').textContent = formatoMoneda(cuota);
+    document.getElementById('rMonto').textContent = formatoMoneda(monto);
+    document.getElementById('rPlazo').textContent = plazoMeses + ' meses';
+    document.getElementById('rTotal').textContent = formatoMoneda(total);
+    document.getElementById('rInteres').textContent = formatoMoneda(interes);
+
+    const texto = `Simulación de financiación BNA Conecta:%0AMonto: ${formatoMoneda(monto)}%0APlazo: ${plazoMeses} meses%0ATNA: ${tna}%25%0ACuota estimada: ${formatoMoneda(cuota)}%0ATotal a pagar: ${formatoMoneda(total)}`;
+    document.getElementById('waBtn').href = `https://wa.me/?text=${texto}`;
+  }
+
+  montoInput.addEventListener('input', (e)=>{
+    const cursorAlFinal = e.target.selectionStart === e.target.value.length;
+    e.target.value = formatoInputMonto(e.target.value);
+    if(cursorAlFinal) e.target.setSelectionRange(e.target.value.length, e.target.value.length);
+    calcular();
+  });
+  tnaInput.addEventListener('input', calcular);
+
+  plazoBtns.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      plazoBtns.forEach(b=>b.classList.remove('activo'));
+      btn.classList.add('activo');
+      plazoMeses = parseInt(btn.dataset.meses);
+      calcular();
+    });
+  });
+
+  montoInput.value = formatoInputMonto(montoInput.value);
+  calcular();
+</script>
+
+</body>
+</html>
