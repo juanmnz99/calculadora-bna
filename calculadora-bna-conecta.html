@@ -99,6 +99,51 @@
     color:#66748a;
     margin-top:6px;
   }
+  .plazo-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:6px;
+  }
+  .plazo-header label{
+    margin-bottom:0;
+  }
+  .plazo-valor{
+    font-size:15px;
+    font-weight:700;
+    color:var(--azul);
+  }
+  input[type=range]{
+    width:100%;
+    accent-color:var(--azul);
+    height:6px;
+    margin:8px 0 4px;
+  }
+  .plazo-atajos{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:10px;
+  }
+  .plazo-atajo{
+    flex:1;
+    min-width:60px;
+    padding:7px 0;
+    text-align:center;
+    border:1.5px solid var(--gris-borde);
+    border-radius:7px;
+    cursor:pointer;
+    font-size:12px;
+    font-weight:600;
+    color:#66748a;
+    background:#fff;
+    transition:all .15s;
+  }
+  .plazo-atajo.activo{
+    background:var(--azul);
+    border-color:var(--azul);
+    color:#fff;
+  }
   .resultado{
     margin-top:22px;
     background:var(--gris);
@@ -173,12 +218,16 @@
     </div>
 
     <div class="field">
-      <label>Plazo</label>
-      <div class="plazos">
-        <div class="plazo-btn" data-meses="12">12 meses</div>
-        <div class="plazo-btn" data-meses="18">18 meses</div>
-        <div class="plazo-btn activo" data-meses="24">24 meses</div>
-        <div class="plazo-btn" data-meses="36">36 meses</div>
+      <div class="plazo-header">
+        <label>Plazo</label>
+        <span class="plazo-valor"><span id="plazoLabel">24</span> meses</span>
+      </div>
+      <input type="range" id="plazoSlider" min="1" max="36" value="24">
+      <div class="plazo-atajos">
+        <div class="plazo-atajo" data-meses="12">12</div>
+        <div class="plazo-atajo" data-meses="18">18</div>
+        <div class="plazo-atajo activo" data-meses="24">24</div>
+        <div class="plazo-atajo" data-meses="36">36</div>
       </div>
     </div>
 
@@ -205,7 +254,9 @@
 <script>
   const montoInput = document.getElementById('monto');
   const tnaInput = document.getElementById('tna');
-  const plazoBtns = document.querySelectorAll('.plazo-btn');
+  const plazoSlider = document.getElementById('plazoSlider');
+  const plazoLabel = document.getElementById('plazoLabel');
+  const plazoAtajos = document.querySelectorAll('.plazo-atajo');
   let plazoMeses = 24;
 
   function parseMonto(str){
@@ -245,6 +296,12 @@
     document.getElementById('waBtn').href = `https://wa.me/?text=${texto}`;
   }
 
+  function sincronizarAtajos(){
+    plazoAtajos.forEach(a=>{
+      a.classList.toggle('activo', parseInt(a.dataset.meses) === plazoMeses);
+    });
+  }
+
   montoInput.addEventListener('input', (e)=>{
     const cursorAlFinal = e.target.selectionStart === e.target.value.length;
     e.target.value = formatoInputMonto(e.target.value);
@@ -253,11 +310,19 @@
   });
   tnaInput.addEventListener('input', calcular);
 
-  plazoBtns.forEach(btn=>{
+  plazoSlider.addEventListener('input', ()=>{
+    plazoMeses = parseInt(plazoSlider.value);
+    plazoLabel.textContent = plazoMeses;
+    sincronizarAtajos();
+    calcular();
+  });
+
+  plazoAtajos.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      plazoBtns.forEach(b=>b.classList.remove('activo'));
-      btn.classList.add('activo');
       plazoMeses = parseInt(btn.dataset.meses);
+      plazoSlider.value = plazoMeses;
+      plazoLabel.textContent = plazoMeses;
+      sincronizarAtajos();
       calcular();
     });
   });
